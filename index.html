@@ -1,0 +1,734 @@
+<!doctype html>
+<html lang="en">
+
+	<head>
+		<meta charset="utf-8">
+
+		<title>logic by niquola</title>
+
+		<meta name="description" content="Slides for java meetup 2017 about rdf">
+		<meta name="author" content="Nikolai Ryzhikov">
+
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<link rel="stylesheet" href="css/reveal.css">
+		<link rel="stylesheet" href="css/theme/black.css" id="theme">
+
+		<!-- Theme used for syntax highlighting of code -->
+		<link rel="stylesheet" href="lib/css/zenburn.css">
+
+		<!-- Printing and PDF exports -->
+		<script>
+			var link = document.createElement( 'link' );
+			link.rel = 'stylesheet';
+			link.type = 'text/css';
+			link.href = window.location.search.match( /print-pdf/gi ) ? 'css/print/pdf.css' : 'css/print/paper.css';
+			document.getElementsByTagName( 'head' )[0].appendChild( link );
+		</script>
+    <style>
+     .reveal section img { background: white; }
+      </style>
+
+		<!--[if lt IE 9]>
+		<script src="lib/js/html5shiv.js"></script>
+		<![endif]-->
+	</head>
+
+	<body>
+
+		<div class="reveal">
+			<div class="slides">
+
+<section data-markdown>
+  <script type="text/template">
+    ## Modeling & RDF
+
+    ----
+
+   ```
+    java meetup spb 2017 by [@niquola](https://github.io/niquola)
+   ```
+  </script>
+</section>
+
+<section data-markdown><script type="text/template">
+
+Случалось ли с вами, что очередная фича требует
+переписывания половины приложения?
+
+</script></section>
+
+<section data-markdown>
+  <script type="text/template" >
+
+Модель не выдержала
+проверки действительностью
+
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template" >
+ 
+   заказчик туповат
+
+   или
+
+   вы некудышный проектировщик
+
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template" >
+
+   просто мир такой
+
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template" >
+   Модель
+   ----
+
+   modulus лат. - «мера, мелодия; модуль» 
+
+   ---
+   все модели неверны, но некоторые — полезны
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template">
+    Как вы моделируете?
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template">
+
+   * UML (OOP)
+   * ERD
+   * Картинки и здравый смысл
+
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template">
+
+   Язык определяет мышление
+
+   ----
+
+   мы поговорим про RDF,
+   возможно еще один инструмент в вашем
+   арсенале
+
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template">
+   Какие принципы при моделировании
+
+   вы используете?
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template">
+   CWA vs. OWA
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template">
+
+   Closed vs Open World Assumption
+
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template">
+
+Неизвестное поле:
+
+   ```
+{
+  "id" : 777,
+  "name": "nicola",
+  "birthDate": "1980",
+  ...
+  "karma": "police" <<- ???
+}
+   ```
+----
+
+error or ignore?
+
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template">
+
+   Падаем?
+
+   ```
+   User.fromJson(str); => throw unknown field
+
+   INSERT INTO USER (name, birthDate, ????)...
+   ```
+
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template">
+
+   А как не падать?
+
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template">
+
+   Неполные данные - падаем?
+
+
+   ```
+{
+  "id" : 777,
+  "name": null, <<- ???
+  "birthDate": "1980"
+}
+   ```
+
+NULL's semantic
+
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template">
+
+   А как не падать?
+
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template">
+
+   * Generic key/value serialization
+   * Document dbs
+   * EAV - pattern
+
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template">
+  
+   Фундаментальное отличие
+
+   * dynamic vs static
+
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template">
+
+   Минимальная единица информации:
+
+   ---
+
+   ENTITY - ATTRIBUTE - VALUE
+
+   ---
+
+   datom
+
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template">
+
+   RDF triples:
+
+   Subject - Prdicate - Object
+
+   ```
+
+[
+ [777, "name", "nicola"],
+ [777, "birthDate", "1980"],
+ [777, "karma", "police"]
+]
+   ```
+
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template">
+
+   Name clash:
+
+* Organization.id vs Patient.id
+* Organization.name vs Patient.name
+
+  </script>
+</section>
+
+
+<section data-markdown>
+  <script type="text/template">
+
+   Global Naming:
+
+```
+[
+ [http://aidbox.io/Patient/777,
+  "http://aidbox.io/schema/Patient.name",
+  "nicola"],
+ ...,
+ [http://aidbox.io/Organization/333,
+  "http://aidbox.io/schema/Organization.name",
+  "health-samuria"],
+ ...
+]
+```
+
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template">
+
+   Formats:
+
+* Turtle
+* N-Triples
+* N-Quads
+* JSON-LD
+* N3
+* RDF/XML
+
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template">
+
+   Formats: N3
+
+```
+   @prefix dc: <http://purl.org/dc/elements/1.1/>.
+   @prefix wiki: <http://en.wikipedia.org/wiki>. 
+ 
+   wiki:Tony_Benn
+   dc:title "Tony Benn";
+   dc:publisher "Wikipedia".
+```
+
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template">
+
+   Formats: JSON-LD
+
+```
+{
+  @id: "http://en.wikipedia.org/wik/Tony_Benn",
+  @context: {
+     title: { @id: "http://purl.org/dc/elements/1.1/title"},
+     publisher: { @id: "http://purl.org/dc/elements/1.1/publisher", @type: "...string"}
+  },
+  title: "Tony Benn",
+  publisher: "Wikipedia"
+}
+```
+
+  </script>
+</section>
+
+
+<section data-markdown>
+  <script type="text/template">
+
+Composable DB1 + DB2 = DB{1,2}!!!
+
+
+```
+{
+  @id: 7,
+  sys1:title: "Title1",
+  sys2:title: "Title1"
+}
+```
+
+----
+
+AAA: Anyone can say Anything about Any topic
+
+  </script>
+</section>
+
+
+<section data-markdown>
+  <script type="text/template">
+
+   Patient, Physician, User, Person relationship?
+
+   Is Patient Person?
+   Is Physician User?
+
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template">
+
+   Universal Model Assumption
+
+   ----
+
+   можно разработать универсальную модель
+
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template">
+
+   Проблема классификации:
+
+   их может быть несколько :(
+
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template">
+
+   Как с этим жить?
+
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template">
+
+В коде:
+
+---
+
+* Composition vs Inheretance
+* Interfaces
+* Mixins, Extension, Traits
+* Ad-Hock Polymorphism
+* DCI
+
+---
+
+Expression problem
+
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template">
+
+В базе:
+
+---
+
+* pg inheretance
+* views
+
+---
+
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template">
+
+Intensional vs Extensional definitions
+
+---
+
+* by properties
+* by label (докажи что не верблюд)
+
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template">
+
+   rdf:type
+
+---
+
+   ```
+{
+  "@id" : "niquola",
+  "@type": ["aidbox.io/User", "github.io/User"],
+  "name": "niquola",
+  "birthDate": "1980"
+}
+   ```
+
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template">
+   RDF Schema:
+
+   ```
+* rdfs:Resource - is the class of everything
+* rdfs:Class - declares a resource as a class
+* rdf:Property – the class of properties.
+
+
+   ```
+
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template">
+
+   ```
+  myns:User is_a rdfs:Class
+  myns:niquola rdf:type nymns:User
+
+   ```
+
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template">
+
+   ```
+  myns:Contact is_a rdfs:Class
+  myns:Person is_a rdfs:Class
+
+  myns:User rdfs:subClassOf myns:Contact
+  myns:User rdfs:subClassOf myns:Person
+
+   ```
+
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template">
+
+   ## Magic:
+
+   ```
+  myns:nicola rdf:type myns:User
+  +
+  myns:User rdfs:subClassOf myns:Contact
+  myns:User rdfs:subClassOf myns:Person
+
+  ----
+  myns:nicola rdf:type myns:Concact
+  myns:nicola rdf:type myns:Person
+
+   ```
+
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template">
+
+   ### INFERENCE:
+
+   * Inference Rule
+   * axioms/facts apply rules -> new facts
+
+   ---
+
+   aka. `if then` or views (reactive :)
+
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template">
+
+   ```
+  myns:nicola myns:name "Nikolai"
+  +
+  myns:name rdfs:subPropertyOf myns:display
+
+  ---
+
+  myns:nicola myns:display "Nikolai"
+   ```
+
+
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template">
+
+   Range & Domain (Intensional)
+
+
+   ```
+   :program rdfs:domain :Programmer
+   :program rdfs:range :ProgrammingLanguage
+
+   +
+
+   :niquola :program :Clojure
+
+  ---
+
+  :nicola rdf:type :Programmer
+  :Clojure rdf:type :ProgrammingLanguage
+
+   ```
+
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template">
+   OWL 2 (Web Ontology Language :
+
+* owl:equivalentProperty
+* owl:inverseOf
+* owl:FunctionalProperty
+* owl:TransitiveProperty
+* owl:SymmetricProperty
+* ....
+
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template">
+   ### Math: Description logic
+
+   * ABox
+   * TBox
+   * RBox
+
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template">
+   Ontologies:
+
+* The Dublin Core (DC) ontology
+* The Friend Of A Friend (FOAF) ontology
+* Socially Interconnected Online Communities (SIOC) ontology
+
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template">
+   ### Query: SPARQL
+
+```
+
+PREFIX ex: <http://example.com/exampleOntology#>
+SELECT ?capital ?country
+WHERE {
+  ?x  ex:cityname ?capital.
+  ?x  ex:isCapitalOf ?y.
+  ?y  ex:countryname ?country.
+  ?y  ex:isInContinent ex:Africa.
+}
+
+```
+
+[Example from dbpedial](http://dbpedia.org/snorql/?query=SELECT+%3Fname+%3Fbirth+%3Fdescription+%3Fperson+WHERE+%7B%0D%0A++++++%3Fperson+a+dbo%3AMusicalArtist+.%0D%0A++++++%3Fperson+dbo%3AbirthPlace+%3ABerlin+.%0D%0A++++++%3Fperson+dbo%3AbirthDate+%3Fbirth+.%0D%0A++++++%3Fperson+foaf%3Aname+%3Fname+.%0D%0A++++++%3Fperson+rdfs%3Acomment+%3Fdescription+.%0D%0A++++++FILTER+%28LANG%28%3Fdescription%29+%3D+%27en%27%29+.+%0D%0A%7D+ORDER+BY+%3Fname)
+
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template">
+   Что дальше?
+
+* принципы
+* теория
+* интсрументы
+* применение
+
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template">
+
+   RDF is paradigm, not implementation
+
+   ----
+
+   fp history
+
+  </script>
+</section>
+
+<section data-markdown>
+  <script type="text/template">
+
+   ## [Semantic Web SPb](https://www.facebook.com/groups/777619825731079/)
+
+  </script>
+</section>
+
+		<script src="lib/js/head.min.js"></script>
+		<script src="js/reveal.js"></script>
+
+		<script>
+
+			// More info https://github.com/hakimel/reveal.js#configuration
+			Reveal.initialize({
+				controls: true,
+				progress: true,
+				history: true,
+				center: true,
+
+				transition: 'slide', // none/fade/slide/convex/concave/zoom
+
+				// More info https://github.com/hakimel/reveal.js#dependencies
+				dependencies: [
+					{ src: 'lib/js/classList.js', condition: function() { return !document.body.classList; } },
+					{ src: 'plugin/markdown/marked.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/markdown/markdown.js', condition: function() { return !!document.querySelector( '[data-markdown]' ); } },
+					{ src: 'plugin/highlight/highlight.js', async: true, callback: function() { hljs.initHighlightingOnLoad(); } },
+					{ src: 'plugin/zoom-js/zoom.js', async: true },
+					{ src: 'plugin/notes/notes.js', async: true }
+				]
+			});
+
+		</script>
+
+	</body>
+</html>
